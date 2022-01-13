@@ -1,4 +1,4 @@
-# Projeto de API para gerenciamento interno de companhias aéreas
+# Projeto ASP.NET Core MVC para gerenciamento de clínicas
 
 ## Como executar o projeto
 
