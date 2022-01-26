@@ -8,6 +8,6 @@
         public string? CirurgiasRealizadas { get; set; }
         public string? Foto { get; set; }
         public int IdPaciente { get; set; }
-        public Paciente Paciente { get; set; }
+        public Paciente? Paciente { get; set; }
     }
 }

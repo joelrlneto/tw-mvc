@@ -2,7 +2,7 @@
 {
     public class AdicionarMedicoViewModel
     {
-        public string Nome { get; set; }
-        public string CRM { get; set; }
+        public string Nome { get; set; } = String.Empty;
+        public string CRM { get; set; } = String.Empty;
     }
 }

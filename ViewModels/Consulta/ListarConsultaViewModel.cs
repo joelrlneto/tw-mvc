@@ -3,8 +3,8 @@
     public class ListarConsultaViewModel
     {
         public int Id { get; set; }
-        public string Paciente { get; set; }
-        public string Medico { get; set; }
+        public string Paciente { get; set; } = String.Empty;
+        public string Medico { get; set; } = String.Empty;
         public DateTime Data { get; set; }
     }
 }

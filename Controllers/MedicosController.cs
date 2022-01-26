@@ -17,19 +17,16 @@ namespace WebApplication4.Controllers
         // GET: MedicosController
         public ActionResult Index(string filtro)
         {
-            var medicos = new List<ListarMedicoViewModel>();
+            var condicao = (Medico m) => String.IsNullOrWhiteSpace(filtro) ? true : m.Nome.Contains(filtro) || m.CRM.Contains(filtro.Replace("/", "").Replace("-", ""));
 
-            if (!String.IsNullOrWhiteSpace(filtro))
-            {
-                medicos = _context.Medicos.Where(m => m.Nome.Contains(filtro) || m.CRM.Contains(filtro.Replace("/", "").Replace("-", "")))
+            var medicos = _context.Medicos.Where(condicao)
                                           .Select(p => new ListarMedicoViewModel
                                           {
-                                               Id = p.Id,
-                                               Nome = p.Nome,
-                                               CRM = p.CRM
+                                              Id = p.Id,
+                                              Nome = p.Nome,
+                                              CRM = p.CRM
                                           })
                                           .ToList();
-            }
 
             return View(medicos);
         }
@@ -48,10 +45,10 @@ namespace WebApplication4.Controllers
             try
             {
                 var medico = new Medico
-                {
-                    Nome = dados.Nome,
-                    CRM = dados.CRM.Replace("/", "").Replace("-", "")
-                };
+                (
+                    dados.Nome,
+                    dados.CRM.Replace("/", "").Replace("-", "")
+                );
 
                 _context.Medicos.Add(medico);
                 _context.SaveChanges();
@@ -92,12 +89,16 @@ namespace WebApplication4.Controllers
             try
             {
                 var medico = _context.Medicos.Find(id);
-                medico.CRM = dados.CRM.Replace("/", "").Replace("-", "");
-                medico.Nome = dados.Nome;
-                _context.Medicos.Update(medico);
-                _context.SaveChanges();
-
-                return RedirectToAction(nameof(Index));
+                
+                if(medico != null)
+                {
+                    medico.CRM = dados.CRM.Replace("/", "").Replace("-", "");
+                    medico.Nome = dados.Nome;
+                    _context.Medicos.Update(medico);
+                    _context.SaveChanges();
+                    return RedirectToAction(nameof(Index));
+                }
+                else return NotFound();
             }
             catch
             {
@@ -119,10 +120,7 @@ namespace WebApplication4.Controllers
                     Nome = medico.Nome
                 });
             }
-            else
-            {
-                return NotFound();
-            }
+            else return NotFound();
         }
 
         // POST: MedicosController/Delete/5
@@ -134,10 +132,13 @@ namespace WebApplication4.Controllers
             {
                 var medico = _context.Medicos.Find(id);
 
-                _context.Medicos.Remove(medico);
-                _context.SaveChanges();
-
-                return RedirectToAction(nameof(Index));
+                if (medico != null)
+                {
+                    _context.Medicos.Remove(medico);
+                    _context.SaveChanges();
+                    return RedirectToAction(nameof(Index));
+                }
+                else return NotFound();
             }
             catch
             {

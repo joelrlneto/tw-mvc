@@ -24,12 +24,12 @@ namespace WebApplication4.Controllers
             {
                 consultas = _context.Consultas.Include(c => c.Paciente)
                                               .Include(c => c.Medico)  
-                                              .Where(c => c.Paciente.Nome.Contains(filtro) || c.Medico.Nome.Contains(filtro))
+                                              .Where(c => c.Paciente!.Nome.Contains(filtro) || c.Medico!.Nome.Contains(filtro))
                                               .Select(c => new ListarConsultaViewModel
                                               {
                                                   Id = c.Id,
-                                                  Paciente = c.Paciente.Nome,
-                                                  Medico = c.Medico.Nome,
+                                                  Paciente = c.Paciente!.Nome,
+                                                  Medico = c.Medico!.Nome,
                                                   Data = c.Data
                                               })
                                               .ToList();
@@ -85,7 +85,7 @@ namespace WebApplication4.Controllers
                 {
                     IdMedico = consulta.IdMedico,
                     IdPaciente = consulta.IdPaciente,
-                    NomePaciente = consulta.Paciente.Nome,
+                    NomePaciente = consulta.Paciente!.Nome,
                     Data = consulta.Data,
                     Tipo = consulta.Tipo
                 });
@@ -101,15 +101,19 @@ namespace WebApplication4.Controllers
             try
             {
                 var consulta = _context.Consultas.Find(id);
-                consulta.IdPaciente = dados.IdPaciente;
-                consulta.IdMedico = dados.IdMedico;
-                consulta.Data = dados.Data;
-                consulta.Tipo = dados.Tipo;
+                if(consulta != null)
+                {
+                    consulta.IdPaciente = dados.IdPaciente;
+                    consulta.IdMedico = dados.IdMedico;
+                    consulta.Data = dados.Data;
+                    consulta.Tipo = dados.Tipo;
 
-                _context.Consultas.Add(consulta);
-                _context.SaveChanges();
+                    _context.Consultas.Add(consulta);
+                    _context.SaveChanges();
+                    return RedirectToAction(nameof(Index));
+                }
+                else return NotFound();
 
-                return RedirectToAction(nameof(Index));
             }
             catch
             {

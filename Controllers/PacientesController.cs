@@ -19,11 +19,9 @@ namespace WebApplication4.Controllers
         // GET: PacientesController
         public ActionResult Index(string filtro)
         {
-            var pacientes = new List<ListarPacienteViewModel>();
+            var condicao = (Paciente p) => String.IsNullOrWhiteSpace(filtro) ? true : p.Nome.Contains(filtro) || p.CPF.Contains(filtro.Replace(".", "").Replace("-", ""));
 
-            if (!String.IsNullOrWhiteSpace(filtro))
-            {
-                pacientes = _context.Pacientes.Where(p => p.Nome.Contains(filtro) || p.CPF.Contains(filtro.Replace(".", "").Replace("-", "")))
+            var pacientes = _context.Pacientes.Where(condicao)
                                               .Select(p => new ListarPacienteViewModel
                                               {
                                                   Id = p.Id,
@@ -31,7 +29,6 @@ namespace WebApplication4.Controllers
                                                   CPF = p.CPF
                                               })
                                               .ToList();
-            }
 
             return View(pacientes);
         }
@@ -50,11 +47,11 @@ namespace WebApplication4.Controllers
             try
             {
                 var paciente = new Paciente
-                {
-                    Nome = dados.Nome,
-                    CPF = dados.CPF.Replace(".","").Replace("-",""),
-                    DataNascimento = dados.DataNascimento
-                };
+                (
+                    dados.CPF.Replace(".","").Replace("-",""),
+                    dados.Nome,
+                    dados.DataNascimento
+                );
 
                 _context.Pacientes.Add(paciente);
                 _context.SaveChanges();
@@ -101,29 +98,34 @@ namespace WebApplication4.Controllers
             try
             {
                 var paciente = _context.Pacientes.Find(id);
-                paciente.CPF = dados.CPF.Replace(".", "").Replace("-", "");
-                paciente.Nome = dados.Nome;
-                paciente.DataNascimento = dados.DataNascimento;
 
-                var informacoesComplementares = _context.InformacoesComplementaresPaciente.FirstOrDefault(i => i.IdPaciente == id);
+                if (paciente != null)
+                {
+                    paciente.CPF = dados.CPF.Replace(".", "").Replace("-", "");
+                    paciente.Nome = dados.Nome;
+                    paciente.DataNascimento = dados.DataNascimento;
 
-                if (informacoesComplementares == null)
-                    informacoesComplementares = new InformacoesComplementaresPaciente();
+                    var informacoesComplementares = _context.InformacoesComplementaresPaciente.FirstOrDefault(i => i.IdPaciente == id);
 
-                informacoesComplementares.Alergias = dados.Alergias;
-                informacoesComplementares.MedicamentosEmUso = dados.MedicamentosEmUso;
-                informacoesComplementares.CirurgiasRealizadas = dados.CirurgiasRealizadas;
-                informacoesComplementares.IdPaciente = id;
+                    if (informacoesComplementares == null)
+                        informacoesComplementares = new InformacoesComplementaresPaciente();
 
-                if (informacoesComplementares.Id > 0)
-                    _context.InformacoesComplementaresPaciente.Update(informacoesComplementares);
-                else
-                    _context.InformacoesComplementaresPaciente.Add(informacoesComplementares);
+                    informacoesComplementares.Alergias = dados.Alergias;
+                    informacoesComplementares.MedicamentosEmUso = dados.MedicamentosEmUso;
+                    informacoesComplementares.CirurgiasRealizadas = dados.CirurgiasRealizadas;
+                    informacoesComplementares.IdPaciente = id;
 
-                _context.Pacientes.Update(paciente);
-                _context.SaveChanges();
+                    if (informacoesComplementares.Id > 0)
+                        _context.InformacoesComplementaresPaciente.Update(informacoesComplementares);
+                    else
+                        _context.InformacoesComplementaresPaciente.Add(informacoesComplementares);
 
-                return RedirectToAction(nameof(Index));
+                    _context.Pacientes.Update(paciente);
+                    _context.SaveChanges();
+
+                    return RedirectToAction(nameof(Index));
+                }
+                else return NotFound();
             }
             catch
             {
@@ -160,14 +162,21 @@ namespace WebApplication4.Controllers
             try
             {
                 var paciente = _context.Pacientes.Find(id);
-                var informacoesComplementares = _context.InformacoesComplementaresPaciente.FirstOrDefault(i => i.IdPaciente == id);
+                if(paciente != null)
+                {
+                    var informacoesComplementares = _context.InformacoesComplementaresPaciente.FirstOrDefault(i => i.IdPaciente == id);
 
-                _context.InformacoesComplementaresPaciente.Remove(informacoesComplementares);
-                _context.Pacientes.Remove(paciente);
+                    if(informacoesComplementares != null)
+                    {
+                        _context.InformacoesComplementaresPaciente.Remove(informacoesComplementares);
+                    }
 
-                _context.SaveChanges();
+                    _context.Pacientes.Remove(paciente);
+                    _context.SaveChanges();
 
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                }
+                else return NotFound();
             }
             catch
             {

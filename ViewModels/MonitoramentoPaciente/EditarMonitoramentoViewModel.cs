@@ -8,7 +8,7 @@ namespace WebApplication4.ViewModels.MonitoramentoPaciente
 
         [Required(ErrorMessage = "Campo obrigatório")]
         [Display(Name = "Pressão arterial")]
-        public string PressaoArterial { get; set; }
+        public string PressaoArterial { get; set; } = String.Empty;
 
 
         [Required(ErrorMessage = "Campo obrigatório")]

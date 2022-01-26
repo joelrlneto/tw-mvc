@@ -6,12 +6,13 @@ namespace WebApplication4.Models.Contexts
 {
     public class SisMedContext : DbContext
     {
+        #nullable disable
         public DbSet<Paciente> Pacientes { get; set; }
         public DbSet<Medico> Medicos { get; set; }
         public DbSet<Consulta> Consultas { get; set; }
         public DbSet<InformacoesComplementaresPaciente> InformacoesComplementaresPaciente { get; set; }
         public DbSet<MonitoramentoPaciente> MonitoramentosPaciente { get; set; }
-
+        #nullable restore
         public SisMedContext(DbContextOptions<SisMedContext> options): base(options)
         {
 

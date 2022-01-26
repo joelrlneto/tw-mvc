@@ -16,7 +16,7 @@ namespace WebApplication4.ViewModels.Consulta
         [Display(Name = "Paciente")]
         public int IdPaciente { get; set; }
         
-        public string NomePaciente { get; set; }
+        public string NomePaciente { get; set; } = String.Empty;
 
         [Required(ErrorMessage = "Campo obrigatório")]
         [Display(Name = "Médico")]

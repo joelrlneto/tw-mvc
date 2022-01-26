@@ -104,17 +104,22 @@ namespace WebApplication4.Controllers
             try
             {
                 var monitoramento = _context.MonitoramentosPaciente.Find(id);
-                monitoramento.Temperatura = dados.Temperatura;
-                monitoramento.SaturacaoOxigenio = dados.SaturacaoOxigenio;
-                monitoramento.FrequenciaCardiaca = dados.FrequenciaCardiaca;
-                monitoramento.DataAfericao = dados.DataAfericao;
-                monitoramento.SaturacaoOxigenio = dados.SaturacaoOxigenio;
-                monitoramento.PressaoArterial = dados.PressaoArterial;
 
-                _context.MonitoramentosPaciente.Update(monitoramento);
-                _context.SaveChanges();
+                if(monitoramento != null)
+                {
+                    monitoramento.Temperatura = dados.Temperatura;
+                    monitoramento.SaturacaoOxigenio = dados.SaturacaoOxigenio;
+                    monitoramento.FrequenciaCardiaca = dados.FrequenciaCardiaca;
+                    monitoramento.DataAfericao = dados.DataAfericao;
+                    monitoramento.SaturacaoOxigenio = dados.SaturacaoOxigenio;
+                    monitoramento.PressaoArterial = dados.PressaoArterial;
 
-                return RedirectToAction(nameof(Index), new { IdPaciente = monitoramento.IdPaciente });
+                    _context.MonitoramentosPaciente.Update(monitoramento);
+                    _context.SaveChanges();
+
+                    return RedirectToAction(nameof(Index), new { IdPaciente = monitoramento.IdPaciente });
+                }
+                else return NotFound();
             }
             catch
             {
@@ -155,11 +160,15 @@ namespace WebApplication4.Controllers
             {
                 var monitoramento = _context.MonitoramentosPaciente.Find(id);
                
-                _context.MonitoramentosPaciente.Remove(monitoramento);
+               if(monitoramento != null)
+               {   
+                    _context.MonitoramentosPaciente.Remove(monitoramento);
 
-                _context.SaveChanges();
+                    _context.SaveChanges();
 
-                return RedirectToAction(nameof(Index), new { IdPaciente = monitoramento.IdPaciente });
+                    return RedirectToAction(nameof(Index), new { IdPaciente = monitoramento.IdPaciente });
+               }
+               else return NotFound();
             }
             catch
             {
