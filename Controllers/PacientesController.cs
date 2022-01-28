@@ -19,7 +19,7 @@ namespace WebApplication4.Controllers
         // GET: PacientesController
         public ActionResult Index(string filtro)
         {
-            var condicao = (Paciente p) => String.IsNullOrWhiteSpace(filtro) ? true : p.Nome.Contains(filtro) || p.CPF.Contains(filtro.Replace(".", "").Replace("-", ""));
+            var condicao = (Paciente p) => String.IsNullOrWhiteSpace(filtro) || p.Nome.Contains(filtro) || p.CPF.Contains(filtro.Replace(".", "").Replace("-", ""));
 
             var pacientes = _context.Pacientes.Where(condicao)
                                               .Select(p => new ListarPacienteViewModel
@@ -44,14 +44,19 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Adicionar(AdicionarPacienteViewModel dados)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(dados);
+            }
+
             try
             {
                 var paciente = new Paciente
-                (
-                    dados.CPF.Replace(".","").Replace("-",""),
-                    dados.Nome,
-                    dados.DataNascimento
-                );
+                {
+                    CPF = dados.CPF.Replace(".","").Replace("-",""),
+                    Nome = dados.Nome,
+                    DataNascimento = dados.DataNascimento
+                };
 
                 _context.Pacientes.Add(paciente);
                 _context.SaveChanges();
@@ -95,6 +100,11 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Editar(int id, EditarPacienteViewModel dados)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(dados);
+            }
+
             try
             {
                 var paciente = _context.Pacientes.Find(id);

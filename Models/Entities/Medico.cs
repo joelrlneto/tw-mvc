@@ -2,15 +2,13 @@
 {
     public class Medico
     {
-        public Medico(string crm, string nome)
+        public Medico()
         {
-            CRM = crm;
-            Nome = nome;
         }
 
         public int Id { get; set; }
-        public string CRM { get; set; }
-        public string Nome { get; set; }
+        public string CRM { get; set; } = String.Empty;
+        public string Nome { get; set; } = String.Empty;
         public ICollection<Consulta>? Consultas { get; set; }
     }
 }

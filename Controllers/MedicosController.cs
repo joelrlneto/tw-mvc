@@ -17,7 +17,7 @@ namespace WebApplication4.Controllers
         // GET: MedicosController
         public ActionResult Index(string filtro)
         {
-            var condicao = (Medico m) => String.IsNullOrWhiteSpace(filtro) ? true : m.Nome.Contains(filtro) || m.CRM.Contains(filtro.Replace("/", "").Replace("-", ""));
+            var condicao = (Medico m) => String.IsNullOrWhiteSpace(filtro) || m.Nome.Contains(filtro) || m.CRM.Contains(filtro.Replace("/", "").Replace("-", ""));
 
             var medicos = _context.Medicos.Where(condicao)
                                           .Select(p => new ListarMedicoViewModel
@@ -42,13 +42,18 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Adicionar(AdicionarMedicoViewModel dados)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(dados);
+            }
+
             try
             {
                 var medico = new Medico
-                (
-                    dados.Nome,
-                    dados.CRM.Replace("/", "").Replace("-", "")
-                );
+                {
+                    Nome = dados.Nome,
+                    CRM = dados.CRM
+                };
 
                 _context.Medicos.Add(medico);
                 _context.SaveChanges();
@@ -86,6 +91,11 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Editar(int id, EditarMedicoViewModel dados)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(dados);
+            }
+            
             try
             {
                 var medico = _context.Medicos.Find(id);

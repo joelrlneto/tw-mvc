@@ -2,16 +2,13 @@
 {
     public class Paciente
     {
-        public Paciente(string cpf, string nome, DateTime dataNascimento)
+        public Paciente()
         {
-            CPF = cpf;
-            Nome = nome;
-            DataNascimento = dataNascimento;
         }
 
         public int Id { get; set; }
-        public string CPF { get; set; }
-        public string Nome { get; set; }
+        public string CPF { get; set; } = String.Empty;
+        public string Nome { get; set; } = String.Empty;
         public DateTime DataNascimento { get; set; }
         public InformacoesComplementaresPaciente? InformacoesComplementares { get; set; }
         public ICollection<MonitoramentoPaciente>? Monitoramento { get; set; }

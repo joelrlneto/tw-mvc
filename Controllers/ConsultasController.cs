@@ -50,6 +50,11 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Adicionar(AdicionarConsultaViewModel dados)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(dados);
+            }
+            
             try
             {
                 var consulta = new Consulta
@@ -98,6 +103,11 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Editar(int id, EditarConsultaViewModel dados)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(dados);
+            }
+
             try
             {
                 var consulta = _context.Consultas.Find(id);

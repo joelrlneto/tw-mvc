@@ -48,6 +48,11 @@ namespace WebApplication4.Controllers
         [Route("adicionar")]
         public ActionResult Adicionar(AdicionarMonitoramentoViewModel dados)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(dados);
+            }
+            
             try
             {
                 var monitoramento = new MonitoramentoPaciente
@@ -101,6 +106,11 @@ namespace WebApplication4.Controllers
         [Route("editar/{id}")]
         public ActionResult Editar(int id, EditarMonitoramentoViewModel dados)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(dados);
+            }
+
             try
             {
                 var monitoramento = _context.MonitoramentosPaciente.Find(id);
