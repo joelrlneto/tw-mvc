@@ -20,7 +20,7 @@
                     <div class="d-flex justify-content-between">
                         <form asp-action="Index">
                             <div class="input-group input-group-sm" style="width: 300px;">
-                                <input type="text" class="form-control" placeholder="Buscar médico" name="filtro">
+                                <input type="text" class="form-control" placeholder="Buscar médico" name="filtro" value="@ViewBag.Filtro">
 
                                 <div class="input-group-append">
                                     <button type="submit" class="btn btn-default">
@@ -60,6 +60,19 @@
                     </table>
                 </div>
                 <!-- /.card-body -->
+                <div class="card-footer clearfix">
+                    <ul class="pagination pagination-sm m-0 float-right">
+                      @if(ViewBag.NumeroPagina > 1)
+                      {
+                          <li class="page-item"><a class="page-link" href="@Url.Action("Index", "Medicos", new { Filtro = ViewBag.Filtro, Pagina = ViewBag.NumeroPagina - 1 })">&laquo;</a></li>
+                      }
+                      <li class="page-item page-link">Página @ViewBag.NumeroPagina de @ViewBag.TotalPaginas</li>
+                      @if(ViewBag.NumeroPagina < ViewBag.TotalPaginas)
+                      {
+                          <li class="page-item"><a class="page-link" href="@Url.Action("Index", "Medicos", new { Filtro = ViewBag.Filtro, Pagina = ViewBag.NumeroPagina + 1 })">&raquo;</a></li>
+                      }
+                    </ul>
+                </div>
             </div>
             <!-- /.card -->
         </div>

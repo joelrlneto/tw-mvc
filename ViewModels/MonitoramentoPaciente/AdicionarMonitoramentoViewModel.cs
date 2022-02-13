@@ -13,11 +13,8 @@ namespace WebApplication4.ViewModels.MonitoramentoPaciente
         [Display(Name = "Temperatura")]
         public decimal Temperatura { get; set; }
 
-        
-        [Range(0, 100, ErrorMessage = "A saturação deve estar entre {0} e {1}")]
         [Display(Name = "Saturação de oxigênio")]
         public int SaturacaoOxigenio { get; set; }
-
         
         [Display(Name = "Frequência cardíaca")]
         public int FrequenciaCardiaca { get; set; }

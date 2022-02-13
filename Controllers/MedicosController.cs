@@ -8,6 +8,7 @@ namespace WebApplication4.Controllers
     public class MedicosController : Controller
     {
         private readonly SisMedContext _context;
+        private const int TAMANHO_PAGINA = 10;
 
         public MedicosController(SisMedContext context)
         {
@@ -15,9 +16,11 @@ namespace WebApplication4.Controllers
         }
 
         // GET: MedicosController
-        public ActionResult Index(string filtro)
+        public ActionResult Index(string filtro, int pagina = 1)
         {
-            var condicao = (Medico m) => String.IsNullOrWhiteSpace(filtro) || m.Nome.Contains(filtro) || m.CRM.Contains(filtro.Replace("/", "").Replace("-", ""));
+            ViewBag.Filtro = filtro;
+
+            var condicao = (Medico m) => String.IsNullOrWhiteSpace(filtro) || m.Nome.ToUpper().Contains(filtro.ToUpper()) || m.CRM.Contains(filtro.Replace("/", "").Replace("-", ""));
 
             var medicos = _context.Medicos.Where(condicao)
                                           .Select(p => new ListarMedicoViewModel
@@ -25,10 +28,13 @@ namespace WebApplication4.Controllers
                                               Id = p.Id,
                                               Nome = p.Nome,
                                               CRM = p.CRM
-                                          })
-                                          .ToList();
+                                          });
 
-            return View(medicos);
+            ViewBag.NumeroPagina = pagina;
+            ViewBag.TotalPaginas = Math.Ceiling((decimal)medicos.Count() / TAMANHO_PAGINA);
+            return View(medicos.Skip((pagina - 1) * TAMANHO_PAGINA)
+                                 .Take(TAMANHO_PAGINA)
+                                 .ToList());
         }
 
         // GET: MedicosController/Adicionar

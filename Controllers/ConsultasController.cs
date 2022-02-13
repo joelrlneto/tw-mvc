@@ -10,32 +10,46 @@ namespace WebApplication4.Controllers
     public class ConsultasController : Controller
     {
         private readonly SisMedContext _context;
+        private const int TAMANHO_PAGINA = 10;
 
         public ConsultasController(SisMedContext context)
         {
             _context = context;
         }
 
-        public IActionResult Index(string filtro)
+        public IActionResult Index(string filtro, int pagina = 1)
         {
-            var consultas = new List<ListarConsultaViewModel>();
+            ViewBag.Filtro = filtro;
 
+            var consultas = new List<ListarConsultaViewModel>();
+            var query = _context.Consultas.Include(c => c.Paciente)
+                                          .Include(c => c.Medico)
+                                          .AsQueryable();
+                                          
             if (!String.IsNullOrWhiteSpace(filtro))
             {
-                consultas = _context.Consultas.Include(c => c.Paciente)
-                                              .Include(c => c.Medico)  
-                                              .Where(c => c.Paciente!.Nome.Contains(filtro) || c.Medico!.Nome.Contains(filtro))
-                                              .Select(c => new ListarConsultaViewModel
-                                              {
-                                                  Id = c.Id,
-                                                  Paciente = c.Paciente!.Nome,
-                                                  Medico = c.Medico!.Nome,
-                                                  Data = c.Data
-                                              })
-                                              .ToList();
+                query = query.Where(c => c.Paciente!.Nome.ToUpper().Contains(filtro.ToUpper()) || c.Medico!.Nome.ToUpper().Contains(filtro.ToUpper()));
+            }
+            else
+            {
+                query = query.OrderByDescending(c => c.Id)
+                             .Take(10);
             }
 
-            return View(consultas);
+            consultas = query.Select(c => new ListarConsultaViewModel
+                              {
+                                  Id = c.Id,
+                                  Paciente = c.Paciente!.Nome,
+                                  Medico = c.Medico!.Nome,
+                                  Data = c.Data
+                              })
+                              .ToList();
+
+            ViewBag.NumeroPagina = pagina;
+            ViewBag.TotalPaginas = Math.Ceiling((decimal)consultas.Count() / TAMANHO_PAGINA);
+            return View(consultas.Skip((pagina - 1) * TAMANHO_PAGINA)
+                                 .Take(TAMANHO_PAGINA)
+                                 .ToList());
         }
 
         // GET: ConsultasController/Adicionar
@@ -52,6 +66,7 @@ namespace WebApplication4.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.Medicos = _context.Medicos.OrderBy(m => m.Nome).Select(m => new SelectListItem { Text = m.Nome, Value = m.Id.ToString() });
                 return View(dados);
             }
             
