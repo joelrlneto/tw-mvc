@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 builder.Services.AddFluentValidation();
-builder.Services.AddDbContext<SisMedContext>(options => options.UseSqlServer(@"Server=Localhost\SQLExpress;Database=SisMed;Integrated Security=True;"));
+builder.Services.AddDbContext<SisMedContext>();
 builder.Services.AddTransient<IValidator<AdicionarMedicoViewModel>, AdicionarMedicoValidator>();
 builder.Services.AddTransient<IValidator<EditarMedicoViewModel>, EditarMedicoValidator>();
 builder.Services.AddTransient<IValidator<AdicionarPacienteViewModel>, AdicionarPacienteValidator>();
