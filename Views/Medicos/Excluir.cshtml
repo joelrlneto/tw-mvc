@@ -13,10 +13,20 @@
 
 <!-- Main content -->
 <section class="content">
-    <div class="alert alert-danger">
-        <span class="fas fa-warning"></span>
-        Deseja realmente excluir o cadastro deste médico?
-    </div>
+    @if(ViewBag.TemConsultas)
+    {
+        <div class="alert alert-danger">
+            <span class="fas fa-warning"></span>
+            Este médico possui consultas vinculadas ao seu cadastro e não pode ser excluído.
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <span class="fas fa-warning"></span>
+            Deseja realmente excluir o cadastro deste médico?
+        </div>
+    }
     <div class="row">
         <div class="col-12">
             <form asp-action="Excluir">
@@ -33,9 +43,12 @@
                         </div>
                     </div>
                     <!-- /.card-body -->
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-danger">Excluir</button>
-                    </div>
+                    @if(!ViewBag.TemConsultas)
+                    {
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-danger">Excluir</button>
+                        </div>
+                    }
                 </div>
             </form>
             <!-- /.card -->

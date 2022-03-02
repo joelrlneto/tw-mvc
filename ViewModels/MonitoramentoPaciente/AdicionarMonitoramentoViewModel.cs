@@ -20,6 +20,7 @@ namespace WebApplication4.ViewModels.MonitoramentoPaciente
         public int FrequenciaCardiaca { get; set; }
 
         [Display(Name = "Data de aferição")]
-        public DateTime DataAfericao { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime DataAfericao { get; set; } = DateTime.Now;
     }
 }

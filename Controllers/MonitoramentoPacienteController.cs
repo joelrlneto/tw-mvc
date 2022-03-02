@@ -39,7 +39,7 @@ namespace WebApplication4.Controllers
         public ActionResult Adicionar(int idPaciente)
         {
             ViewBag.IdPaciente = idPaciente;
-            return View();
+            return View(new AdicionarMonitoramentoViewModel());
         }
 
         // POST: PacientesController/Create

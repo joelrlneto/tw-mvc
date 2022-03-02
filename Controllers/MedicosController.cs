@@ -129,6 +129,11 @@ namespace WebApplication4.Controllers
 
             if (medico != null)
             {
+                var temConsultas = _context.Consultas.Any(c => c.IdMedico == id);
+
+                if (temConsultas)
+                    ViewBag.TemConsultas = true;
+
                 return View(new EditarMedicoViewModel
                 {
                     Id = medico.Id,

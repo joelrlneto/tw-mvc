@@ -68,10 +68,17 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col">
-                        <input type="text" id="TxtFiltroPaciente" class="form-control" />
+                        <div class="input-group mb-3">
+                          <input type="text" id="TxtFiltroPaciente" class="form-control" placeholder="Buscar pelo nome ou CPF do paciente"/>
+                          <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="BtnBuscar">
+                               <span class="fa fa-search"></span>
+                            </button>
+                          </div>
+                        </div>
                     </div>
                 </div>
-                <table class="table table-hover table-sm" id="TbPacientes">
+                <table class="table table-hover table-sm d-none" id="TbPacientes">
                     <thead>
                         <tr>
                             <th style="width: 150px">CPF</th>
@@ -82,6 +89,7 @@
 
                     </tbody>
                 </table>
+                <div class="alert alert-warning d-none" id="DivMensagem">Nenhum paciente localizado.</div>
             </div>
         </div>
     </div>
@@ -89,23 +97,39 @@
 
 @section scripts {
 <script>
-    $("#TxtFiltroPaciente").keyup(function(e){
-        if (e.keyCode == 13 && $(this).val().trim().length > 0){
-            $.getJSON("/pacientes/buscar?filtro=" + $(this).val(), function(resultado){
-                var linhas = resultado.map(p => "<tr data-dismiss='modal' style='cursor: pointer' title='Clique para selecionar' data-id='" + p.id + "'><td mask='999.999.999-99'>" + p.cpf + "</td><td>" + p.nome + "</td></tr>").join("");
-                $("#TbPacientes tbody").html(linhas);
-                $('td[mask]').each(function (e) {
-                    $(this).mask($(this).attr('mask'));
-                });
-                $("#TbPacientes tbody tr").click(function(){
-                    var id = $(this).attr("data-id");
-                    var nome = $(this).children()[1].innerText;
-                    console.log(nome);
-                    $("#IdPaciente").val(id);
-                    $("#NomePaciente").val(nome);
-                });
+    function buscarPaciente() {
+        if ($("#TxtFiltroPaciente").val().trim().length > 0){
+            $.getJSON("/pacientes/buscar?filtro=" + $("#TxtFiltroPaciente").val(), function(resultado){
+                if(resultado.length > 0) {
+                    var linhas = resultado.map(p => "<tr data-dismiss='modal' style='cursor: pointer' title='Clique para selecionar' data-id='" + p.id + "'><td mask='999.999.999-99'>" + p.cpf + "</td><td>" + p.nome + "</td></tr>").join("");
+                    $("#TbPacientes tbody").html(linhas);
+                    $('td[mask]').each(function (e) {
+                        $(this).mask($(this).attr('mask'));
+                    });
+                    $("#TbPacientes tbody tr").click(function(){
+                        var id = $(this).attr("data-id");
+                        var nome = $(this).children()[1].innerText;
+                        $("#IdPaciente").val(id);
+                        $("#NomePaciente").val(nome);
+                    });
+                    $("#TbPacientes").removeClass("d-none");
+                    $("#DivMensagem").addClass("d-none");
+                } else {
+                    $("#TbPacientes").addClass("d-none");
+                    $("#DivMensagem").removeClass("d-none");
+                }
             });
         }
+    }
+
+    $("#TxtFiltroPaciente").keyup(function(e){
+        if(e.keyCode == 13){
+            buscarPaciente();
+        }
+    });
+
+    $("#BtnBuscar").click(function(){
+        buscarPaciente();
     });
 </script>
 }

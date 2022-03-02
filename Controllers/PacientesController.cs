@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 using WebApplication4.Models.Contexts;
 using WebApplication4.Models.Entities;
 using WebApplication4.ViewModels.Paciente;
@@ -55,7 +56,7 @@ namespace WebApplication4.Controllers
 
             var paciente = new Paciente
             {
-                CPF = dados.CPF.Replace(".", "").Replace("-", ""),
+                CPF = Regex.Replace(dados.CPF, "[^0-9]", ""),
                 Nome = dados.Nome,
                 DataNascimento = dados.DataNascimento
             };

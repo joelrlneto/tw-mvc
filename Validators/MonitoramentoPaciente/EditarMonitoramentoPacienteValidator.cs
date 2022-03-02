@@ -19,7 +19,7 @@ namespace WebApplication4.Validators.MonitoramentoPaciente
                                                .Must(bpm => bpm > 0).WithMessage("A frequência cardíaca não pode ser negativa");
 
             RuleFor(x => x.DataAfericao).NotEmpty().WithMessage("Campo obrigatório")
-                                        .Must(data => data <= DateTime.Today).WithMessage("A data de aferição não pode ser futura.");
+                                        .Must(data => data <= DateTime.Now).WithMessage("A data de aferição não pode ser futura.");
 
         }
     }
