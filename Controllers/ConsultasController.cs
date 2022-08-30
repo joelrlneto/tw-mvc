@@ -70,25 +70,18 @@ namespace WebApplication4.Controllers
                 return View(dados);
             }
             
-            try
+            var consulta = new Consulta
             {
-                var consulta = new Consulta
-                {
-                    Data = dados.Data,
-                    IdMedico = dados.IdMedico,
-                    IdPaciente = dados.IdPaciente,
-                    Tipo = dados.Tipo
-                };
+                Data = dados.Data,
+                IdMedico = dados.IdMedico,
+                IdPaciente = dados.IdPaciente,
+                Tipo = dados.Tipo
+            };
 
-                _context.Consultas.Add(consulta);
-                _context.SaveChanges();
+            _context.Consultas.Add(consulta);
+            _context.SaveChanges();
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction(nameof(Index));
         }
 
         public ActionResult Editar(int id)
@@ -110,8 +103,8 @@ namespace WebApplication4.Controllers
                     Tipo = consulta.Tipo
                 });
             }
-            else
-                return NotFound();
+            
+            return NotFound();
         }
 
         [HttpPost]
@@ -123,27 +116,21 @@ namespace WebApplication4.Controllers
                 return View(dados);
             }
 
-            try
+            var consulta = _context.Consultas.Find(id);
+            
+            if(consulta != null)
             {
-                var consulta = _context.Consultas.Find(id);
-                if(consulta != null)
-                {
-                    consulta.IdPaciente = dados.IdPaciente;
-                    consulta.IdMedico = dados.IdMedico;
-                    consulta.Data = dados.Data;
-                    consulta.Tipo = dados.Tipo;
+                consulta.IdPaciente = dados.IdPaciente;
+                consulta.IdMedico = dados.IdMedico;
+                consulta.Data = dados.Data;
+                consulta.Tipo = dados.Tipo;
 
-                    _context.Consultas.Add(consulta);
-                    _context.SaveChanges();
-                    return RedirectToAction(nameof(Index));
-                }
-                else return NotFound();
-
+                _context.Consultas.Add(consulta);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
             }
-            catch
-            {
-                return View();
-            }
+            
+            return NotFound();
         }
     }
 }

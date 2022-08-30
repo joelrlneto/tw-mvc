@@ -105,7 +105,7 @@ namespace WebApplication4.Controllers
 
             if (paciente != null)
             {
-                paciente.CPF = dados.CPF.Replace(".", "").Replace("-", "");
+                paciente.CPF = Regex.Replace(dados.CPF, "[^0-9]", "");
                 paciente.Nome = dados.Nome;
                 paciente.DataNascimento = dados.DataNascimento;
 

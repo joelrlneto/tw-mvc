@@ -13,13 +13,11 @@ namespace WebApplication4.Models.Contexts
             _configuration = configuration;
         }
 
-        #nullable disable
-        public DbSet<Paciente> Pacientes { get; set; }
-        public DbSet<Medico> Medicos { get; set; }
-        public DbSet<Consulta> Consultas { get; set; }
-        public DbSet<InformacoesComplementaresPaciente> InformacoesComplementaresPaciente { get; set; }
-        public DbSet<MonitoramentoPaciente> MonitoramentosPaciente { get; set; }
-        #nullable restore
+        public DbSet<Paciente> Pacientes => Set<Paciente>();
+        public DbSet<Medico> Medicos => Set<Medico>();
+        public DbSet<Consulta> Consultas => Set<Consulta>();
+        public DbSet<InformacoesComplementaresPaciente> InformacoesComplementaresPaciente => Set<InformacoesComplementaresPaciente>();
+        public DbSet<MonitoramentoPaciente> MonitoramentosPaciente => Set<MonitoramentoPaciente>();
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

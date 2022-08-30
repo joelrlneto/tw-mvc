@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc;
 using WebApplication4.Models.Contexts;
 using WebApplication4.Models.Entities;
 using WebApplication4.ViewModels.Medico;
@@ -53,23 +54,16 @@ namespace WebApplication4.Controllers
                 return View(dados);
             }
 
-            try
+            var medico = new Medico
             {
-                var medico = new Medico
-                {
-                    Nome = dados.Nome,
-                    CRM = dados.CRM
-                };
+                Nome = dados.Nome,
+                CRM = Regex.Replace(dados.CRM, "[^0-9]", "")
+            };
 
-                _context.Medicos.Add(medico);
-                _context.SaveChanges();
+            _context.Medicos.Add(medico);
+            _context.SaveChanges();
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: MedicosController/Details/5
@@ -86,10 +80,8 @@ namespace WebApplication4.Controllers
                     Nome = medico.Nome
                 });
             }
-            else
-            {
-                return NotFound();
-            }
+            
+            return NotFound();
         }
 
         // POST: MedicosController/Edit/5
@@ -102,24 +94,18 @@ namespace WebApplication4.Controllers
                 return View(dados);
             }
             
-            try
-            {
-                var medico = _context.Medicos.Find(id);
+            var medico = _context.Medicos.Find(id);
                 
-                if(medico != null)
-                {
-                    medico.CRM = dados.CRM.Replace("/", "").Replace("-", "");
-                    medico.Nome = dados.Nome;
-                    _context.Medicos.Update(medico);
-                    _context.SaveChanges();
-                    return RedirectToAction(nameof(Index));
-                }
-                else return NotFound();
-            }
-            catch
+            if(medico != null)
             {
-                return View();
+                medico.CRM = Regex.Replace(dados.CRM, "[^0-9]", "");
+                medico.Nome = dados.Nome;
+                _context.Medicos.Update(medico);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
             }
+
+            return NotFound();
         }
 
         // GET: MedicosController/Delete/5
@@ -141,7 +127,8 @@ namespace WebApplication4.Controllers
                     Nome = medico.Nome
                 });
             }
-            else return NotFound();
+            
+            return NotFound();
         }
 
         // POST: MedicosController/Delete/5
@@ -149,22 +136,16 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Excluir(int id, EditarMedicoViewModel dados)
         {
-            try
-            {
-                var medico = _context.Medicos.Find(id);
+            var medico = _context.Medicos.Find(id);
 
-                if (medico != null)
-                {
-                    _context.Medicos.Remove(medico);
-                    _context.SaveChanges();
-                    return RedirectToAction(nameof(Index));
-                }
-                else return NotFound();
-            }
-            catch
+            if (medico != null)
             {
-                return View();
+                _context.Medicos.Remove(medico);
+                _context.SaveChanges();
+                return RedirectToAction(nameof(Index));
             }
+            
+            return NotFound();
         }
     }
 }

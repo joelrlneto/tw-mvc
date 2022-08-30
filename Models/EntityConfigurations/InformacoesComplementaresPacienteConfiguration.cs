@@ -20,9 +20,6 @@ namespace WebApplication4.Models.EntityConfigurations
             
             builder.Property(i => i.CirurgiasRealizadas)
                    .HasMaxLength(200);
-            
-            builder.Property(i => i.Foto)
-                   .HasMaxLength(50);
         }
     }
 }

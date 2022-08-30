@@ -11,7 +11,7 @@
         public string Nome { get; set; } = String.Empty;
         public DateTime DataNascimento { get; set; }
         public InformacoesComplementaresPaciente? InformacoesComplementares { get; set; }
-        public ICollection<MonitoramentoPaciente>? Monitoramento { get; set; }
-        public ICollection<Consulta>? Consultas { get; set; }
+        public ICollection<MonitoramentoPaciente> Monitoramento { get; set; } = null!;
+        public ICollection<Consulta> Consultas { get; set; } = null!;
     }
 }

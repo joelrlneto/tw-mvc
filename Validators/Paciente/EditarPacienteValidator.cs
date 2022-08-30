@@ -7,11 +7,8 @@ namespace WebApplication4.Validators.Paciente
 {
     public class EditarPacienteValidator:AbstractValidator<EditarPacienteViewModel>
     {
-        private readonly SisMedContext _context;
         public EditarPacienteValidator(SisMedContext context)
         {
-            _context = context;
-
             RuleFor(x => x.CPF).NotEmpty().WithMessage("Campo obrigatório")
                                .Must(cpf => Regex.Replace(cpf, "[^0-9]", "").Length == 11).WithMessage("CPF inválido");
 
@@ -21,6 +18,7 @@ namespace WebApplication4.Validators.Paciente
             RuleFor(x => x.DataNascimento).NotEmpty().WithMessage("Campo obrigatório")
                                           .Must(data => data <= DateTime.Today).WithMessage("A data de nascimento não pode ser futura.");
 
+            RuleFor(x => x).Must(x => !context.Pacientes.Any(paciente => paciente.CPF == Regex.Replace(x.CPF, "[^0-9]", "") && paciente.Id != x.Id)).WithMessage("Este CPF já está cadastrado.");
         }
     }
 }
