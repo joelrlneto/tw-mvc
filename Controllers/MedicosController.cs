@@ -1,4 +1,6 @@
 ﻿using System.Text.RegularExpressions;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication4.Models.Contexts;
 using WebApplication4.Models.Entities;
@@ -9,11 +11,16 @@ namespace WebApplication4.Controllers
     public class MedicosController : Controller
     {
         private readonly SisMedContext _context;
+        private IValidator<AdicionarMedicoViewModel> _adicionarMedicoValidator;
+        private IValidator<EditarMedicoViewModel> _editarMedicoValidator;
         private const int TAMANHO_PAGINA = 10;
 
-        public MedicosController(SisMedContext context)
+        public MedicosController(SisMedContext context, IValidator<EditarMedicoViewModel> editarMedicoValidator, IValidator<AdicionarMedicoViewModel> adicionarMedicoValidator)
         {
             _context = context;
+            //_adicionarMedicoValidator = adicionarMedicoValidator;
+            _editarMedicoValidator = editarMedicoValidator;
+            _adicionarMedicoValidator = adicionarMedicoValidator;
         }
 
         // GET: MedicosController
@@ -49,8 +56,11 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Adicionar(AdicionarMedicoViewModel dados)
         {
-            if (!ModelState.IsValid)
+            var validacao = _adicionarMedicoValidator.Validate(dados);
+
+            if (!validacao.IsValid)
             {
+                validacao.AddToModelState(ModelState, "");
                 return View(dados);
             }
 
@@ -89,8 +99,11 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Editar(int id, EditarMedicoViewModel dados)
         {
-            if (!ModelState.IsValid)
+            var validacao = _editarMedicoValidator.Validate(dados);
+
+            if (!validacao.IsValid)
             {
+                validacao.AddToModelState(ModelState, "");
                 return View(dados);
             }
             

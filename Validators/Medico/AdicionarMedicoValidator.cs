@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using System.Text.RegularExpressions;
 using WebApplication4.Models.Contexts;
 using WebApplication4.ViewModels.Medico;
 

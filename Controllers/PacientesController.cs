@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using WebApplication4.Models.Contexts;
 using WebApplication4.Models.Entities;
@@ -9,10 +11,14 @@ namespace WebApplication4.Controllers
     public class PacientesController : Controller
     {
         private readonly SisMedContext _context;
+        private readonly IValidator<AdicionarPacienteViewModel> _adicionarPacienteValidator;
+        private readonly IValidator<EditarPacienteViewModel> _editarPacienteValidator;
         private const int TAMANHO_PAGINA = 10;
-        public PacientesController(SisMedContext context)
+        public PacientesController(SisMedContext context, IValidator<AdicionarPacienteViewModel> adicionarPacienteValidator, IValidator<EditarPacienteViewModel> editarPacienteValidator)
         {
             _context = context;
+            _adicionarPacienteValidator = adicionarPacienteValidator;
+            _editarPacienteValidator = editarPacienteValidator;
         }
 
         // GET: PacientesController
@@ -49,8 +55,11 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Adicionar(AdicionarPacienteViewModel dados)
         {
-            if (!ModelState.IsValid)
+            var validacao = _adicionarPacienteValidator.Validate(dados);
+
+            if (!validacao.IsValid)
             {
+                validacao.AddToModelState(ModelState, "");
                 return View(dados);
             }
 
@@ -96,8 +105,11 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Editar(int id, EditarPacienteViewModel dados)
         {
-            if (!ModelState.IsValid)
+            var validacao = _editarPacienteValidator.Validate(dados);
+
+            if (!validacao.IsValid)
             {
+                validacao.AddToModelState(ModelState, "");
                 return View(dados);
             }
 

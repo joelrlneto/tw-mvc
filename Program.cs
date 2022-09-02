@@ -15,16 +15,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
-builder.Services.AddFluentValidation();
 builder.Services.AddDbContext<SisMedContext>();
-builder.Services.AddTransient<IValidator<AdicionarMedicoViewModel>, AdicionarMedicoValidator>();
-builder.Services.AddTransient<IValidator<EditarMedicoViewModel>, EditarMedicoValidator>();
-builder.Services.AddTransient<IValidator<AdicionarPacienteViewModel>, AdicionarPacienteValidator>();
-builder.Services.AddTransient<IValidator<EditarPacienteViewModel>, EditarPacienteValidator>();
-builder.Services.AddTransient<IValidator<AdicionarConsultaViewModel>, AdicionarConsultaValidator>();
-builder.Services.AddTransient<IValidator<EditarConsultaViewModel>, EditarConsultaValidator>();
-builder.Services.AddTransient<IValidator<AdicionarMonitoramentoViewModel>, AdicionarMonitoramentoPacienteValidator>();
-builder.Services.AddTransient<IValidator<EditarMonitoramentoViewModel>, EditarMonitoramentoPacienteValidator>();
+builder.Services.AddScoped<IValidator<AdicionarMedicoViewModel>, AdicionarMedicoValidator>();
+builder.Services.AddScoped<IValidator<EditarMedicoViewModel>, EditarMedicoValidator>();
+builder.Services.AddScoped<IValidator<AdicionarPacienteViewModel>, AdicionarPacienteValidator>();
+builder.Services.AddScoped<IValidator<EditarPacienteViewModel>, EditarPacienteValidator>();
+builder.Services.AddScoped<IValidator<AdicionarConsultaViewModel>, AdicionarConsultaValidator>();
+builder.Services.AddScoped<IValidator<EditarConsultaViewModel>, EditarConsultaValidator>();
+builder.Services.AddScoped<IValidator<AdicionarMonitoramentoViewModel>, AdicionarMonitoramentoPacienteValidator>();
+builder.Services.AddScoped<IValidator<EditarMonitoramentoViewModel>, EditarMonitoramentoPacienteValidator>();
 
 var app = builder.Build();
 

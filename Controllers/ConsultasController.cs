@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApplication4.Models.Contexts;
 using WebApplication4.Models.Entities;
+using WebApplication4.Models.Enums;
 using WebApplication4.ViewModels.Consulta;
 
 namespace WebApplication4.Controllers
@@ -10,11 +13,15 @@ namespace WebApplication4.Controllers
     public class ConsultasController : Controller
     {
         private readonly SisMedContext _context;
+        private readonly IValidator<AdicionarConsultaViewModel> _adicionarConsultaValidator;
+        private readonly IValidator<EditarConsultaViewModel> _editarConsultaValidator;
         private const int TAMANHO_PAGINA = 10;
 
-        public ConsultasController(SisMedContext context)
+        public ConsultasController(SisMedContext context, IValidator<AdicionarConsultaViewModel> adicionarConsultaValidator, IValidator<EditarConsultaViewModel> editarConsultaValidator)
         {
             _context = context;
+            _adicionarConsultaValidator = adicionarConsultaValidator;
+            _editarConsultaValidator = editarConsultaValidator;
         }
 
         public IActionResult Index(string filtro, int pagina = 1)
@@ -41,7 +48,8 @@ namespace WebApplication4.Controllers
                                   Id = c.Id,
                                   Paciente = c.Paciente!.Nome,
                                   Medico = c.Medico!.Nome,
-                                  Data = c.Data
+                                  Data = c.Data,
+                                  Tipo = c.Tipo == TipoConsulta.Eletiva ? "Eletiva" : "Urgência"
                               })
                               .ToList();
 
@@ -56,6 +64,10 @@ namespace WebApplication4.Controllers
         public ActionResult Adicionar()
         {
             ViewBag.Medicos = _context.Medicos.OrderBy(m => m.Nome).Select(m => new SelectListItem { Text = m.Nome, Value = m.Id.ToString() });
+            ViewBag.TiposConsulta = new [] {
+                new SelectListItem { Text = "Eletiva", Value = TipoConsulta.Eletiva.ToString() },
+                new SelectListItem { Text = "Urgência", Value = TipoConsulta.Urgencia.ToString() }
+            };
             return View();
         }
 
@@ -64,9 +76,12 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Adicionar(AdicionarConsultaViewModel dados)
         {
-            if (!ModelState.IsValid)
+            var validacao = _adicionarConsultaValidator.Validate(dados);
+
+            if (!validacao.IsValid)
             {
                 ViewBag.Medicos = _context.Medicos.OrderBy(m => m.Nome).Select(m => new SelectListItem { Text = m.Nome, Value = m.Id.ToString() });
+                validacao.AddToModelState(ModelState, "");
                 return View(dados);
             }
             
@@ -93,7 +108,10 @@ namespace WebApplication4.Controllers
             if (consulta != null)
             {
                 ViewBag.Medicos = _context.Medicos.OrderBy(m => m.Nome).Select(m => new SelectListItem { Text = m.Nome, Value = m.Id.ToString() });
-
+                ViewBag.TiposConsulta = new [] {
+                    new SelectListItem { Text = "Eletiva", Value = TipoConsulta.Eletiva.ToString() },
+                    new SelectListItem { Text = "Urgência", Value = TipoConsulta.Urgencia.ToString() }
+                };
                 return View(new EditarConsultaViewModel
                 {
                     IdMedico = consulta.IdMedico,
@@ -111,8 +129,16 @@ namespace WebApplication4.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Editar(int id, EditarConsultaViewModel dados)
         {
-            if (!ModelState.IsValid)
+            var validacao = _editarConsultaValidator.Validate(dados);
+
+            if (!validacao.IsValid)
             {
+                ViewBag.Medicos = _context.Medicos.OrderBy(m => m.Nome).Select(m => new SelectListItem { Text = m.Nome, Value = m.Id.ToString() });
+                ViewBag.TiposConsulta = new [] {
+                    new SelectListItem { Text = "Eletiva", Value = TipoConsulta.Eletiva.ToString() },
+                    new SelectListItem { Text = "Urgência", Value = TipoConsulta.Urgencia.ToString() }
+                };
+                validacao.AddToModelState(ModelState, "");
                 return View(dados);
             }
 
@@ -125,7 +151,7 @@ namespace WebApplication4.Controllers
                 consulta.Data = dados.Data;
                 consulta.Tipo = dados.Tipo;
 
-                _context.Consultas.Add(consulta);
+                _context.Consultas.Update(consulta);
                 _context.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }

@@ -1,18 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
 using WebApplication4.Models.Contexts;
 using WebApplication4.Models.Entities;
 using WebApplication4.ViewModels.MonitoramentoPaciente;
 
 namespace WebApplication4.Controllers
 {
-    [Route("monitoramento")]
+    [Route("Monitoramento")]
     public class MonitoramentoPacienteController : Controller
     {
         private readonly SisMedContext _context;
+        private readonly IValidator<AdicionarMonitoramentoViewModel> _adicionarMonitoramentoViewModel;
+        private readonly IValidator<EditarMonitoramentoViewModel> _editarMonitoramentoViewModel;
 
-        public MonitoramentoPacienteController(SisMedContext context)
+        public MonitoramentoPacienteController(SisMedContext context, IValidator<AdicionarMonitoramentoViewModel> adicionarMonitoramentoViewModel, IValidator<EditarMonitoramentoViewModel> editarMonitoramentoViewModel)
         {
             _context = context;
+            _adicionarMonitoramentoViewModel = adicionarMonitoramentoViewModel;
+            _editarMonitoramentoViewModel = editarMonitoramentoViewModel;
         }
 
         // GET: PacientesController
@@ -35,7 +41,7 @@ namespace WebApplication4.Controllers
             return View(monitoramentos);
         }
 
-        [Route("adicionar")]
+        [Route("Adicionar")]
         public ActionResult Adicionar(int idPaciente)
         {
             ViewBag.IdPaciente = idPaciente;
@@ -45,11 +51,14 @@ namespace WebApplication4.Controllers
         // POST: PacientesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("adicionar")]
+        [Route("Adicionar")]
         public ActionResult Adicionar(AdicionarMonitoramentoViewModel dados)
         {
-            if (!ModelState.IsValid)
+            var validacao = _adicionarMonitoramentoViewModel.Validate(dados);
+
+            if (!validacao.IsValid)
             {
+                validacao.AddToModelState(ModelState, "");
                 return View(dados);
             }
             
@@ -77,7 +86,7 @@ namespace WebApplication4.Controllers
         }
 
         // GET: PacientesController/Details/5
-        [Route("editar/{id}")]
+        [Route("Editar/{id}")]
         public ActionResult Editar(int id)
         {
             var monitoramento = _context.MonitoramentosPaciente.Find(id);
@@ -103,11 +112,14 @@ namespace WebApplication4.Controllers
         // POST: PacientesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("editar/{id}")]
+        [Route("Editar/{id}")]
         public ActionResult Editar(int id, EditarMonitoramentoViewModel dados)
         {
-            if (!ModelState.IsValid)
+            var validacao = _editarMonitoramentoViewModel.Validate(dados);
+
+            if (!validacao.IsValid)
             {
+                validacao.AddToModelState(ModelState, "");
                 return View(dados);
             }
 
@@ -137,7 +149,7 @@ namespace WebApplication4.Controllers
             }
         }
 
-        [Route("excluir/{id}")]
+        [Route("Excluir/{id}")]
         public ActionResult Excluir(int id)
         {
             var monitoramento = _context.MonitoramentosPaciente.Find(id);
@@ -162,7 +174,7 @@ namespace WebApplication4.Controllers
         // POST: PacientesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("excluir/{id}")]
+        [Route("Excluir/{id}")]
 
         public ActionResult Excluir(int id, IFormCollection collection)
         {
